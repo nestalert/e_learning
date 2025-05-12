@@ -1,0 +1,235 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align items to the top */
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    padding: 20px; /* Add some padding */
+    box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+.container {
+    text-align: center;
+    width: 100%; /* Use full width */
+    max-width: 1200px; /* Limit maximum width */
+}
+
+#periodic-table-container {
+    display: grid;
+    grid-template-columns: repeat(18, 60px); /* Basic grid for periodic table layout */
+    gap: 5px;
+    margin-top: 20px;
+    margin-bottom: 40px; /* Add space below the periodic table */
+    justify-content: center; /* Center the grid */
+}
+
+.element {
+    background-color: #4CAF50; /* Default background color */
+    color: white;
+    border: 1px solid #333;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    font-size: 12px;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+    position: relative; /* Needed for absolute positioning during drag */
+    box-sizing: border-box; /* Include border in element's total width and height */
+}
+
+.element.dragging {
+    opacity: 0.5;
+    position: absolute; /* Position absolutely when dragging */
+    z-index: 1000;
+}
+
+.element .symbol {
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+.element .atomic-number {
+    font-size: 8px;
+}
+
+.element .name {
+    font-size: 8px;
+}
+
+.alkali-metal { background-color: #f13c3c; }
+.alkaline-earth-metal { background-color: #d0b800; }
+.transition-metal { background-color: #207eac; }
+.post-transition-metal { background-color: #27da9f; }
+.metalloid { background-color: #007c00; }
+.nonmetal { background-color: #6dd10a; }
+.noble-gas { background-color: #7323c4; }
+.lanthanide { background-color: #FF99CC; }
+.actinide { background-color: #FFCC99; }
+
+/* --- Compound Checker Area Styles --- */
+.compound-checker-area {
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center the flex items */
+    align-items: flex-start; /* Align items to the top */
+    gap: 20px; /* Space between the reaction panel and info box */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.reaction-panel {
+    margin-top: 0; /* Remove top margin, controlled by parent gap */
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background-color: #fff;
+    display: inline-block;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.input-spots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-spot, .result-spot {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+    background-color: #eee;
+    text-align: center;
+    box-sizing: border-box; /* Include border in element's total width and height */
+    overflow: hidden; /* Hide overflowing text */
+}
+
+.input-spot.filled {
+    border-color: #4CAF50;
+    background-color: #E8F5E9;
+}
+
+.input-spot .symbol {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input-spot .atomic-number, .input-spot .name {
+    font-size: 10px;
+    color: #555;
+}
+
+.operator {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.result-spot {
+    border-style: solid;
+    border-color: #333;
+    background-color: #ddd;
+    color: #333;
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 150px; /* Give some space for compound info */
+    height: 80px; /* Match input spot height */
+    word-break: break-word; /* Break long words */
+    white-space: pre-wrap; /* Preserve whitespace and wrap text */
+}
+
+#clear-button {
+    padding: 8px 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+#clear-button:hover {
+    background-color: #d32f2f;
+}
+
+#compound-info-box {
+    flex-grow: 1; /* Allow the info box to grow */
+    max-width: 400px; /* Limit max width */
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background-color: #fff;
+    text-align: left; /* Align text to the left */
+    box-sizing: border-box;
+}
+
+#compound-info-box h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#compound-info-text {
+    margin-bottom: 0;
+    color: #555;
+    white-space: pre-wrap; /* Preserve line breaks from the info text */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .compound-checker-area {
+        flex-direction: column; /* Stack elements vertically on smaller screens */
+        align-items: center; /* Center items when stacked */
+    }
+
+    #periodic-table-container {
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); /* Adjust grid for smaller screens */
+        gap: 3px;
+    }
+
+    .element {
+        width: auto; /* Adjust width */
+        height: 50px; /* Adjust height */
+        font-size: 10px;
+    }
+
+     .element .symbol {
+        font-size: 16px;
+    }
+
+    .element .atomic-number, .element .name {
+        font-size: 7px;
+    }
+
+    .input-spot, .result-spot {
+        width: 60px;
+        height: 60px;
+        font-size: 12px;
+    }
+
+     .input-spot .symbol {
+        font-size: 20px;
+    }
+
+    .result-spot {
+         min-width: 100px;
+         height: 60px;
+         font-size: 14px;
+    }
+
+    #compound-info-box {
+        max-width: 100%; /* Allow full width on smaller screens */
+    }
+}

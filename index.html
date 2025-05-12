@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Come Learn Chemistry!</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="pt-square.svg">
+</head>
+<body>
+    <div class="container">
+        <h1>Learning about the Periodic Table</h1>
+        <div id="periodic-table-container">
+        </div>
+
+        <div class="compound-checker-area">
+            <div class="reaction-panel">
+                <h2>Compound Checker</h2>
+                <div class="input-spots">
+                    <div class="input-spot" id="input1" data-spot="1"></div>
+                    <div class="operator">+</div>
+                    <div class="input-spot" id="input2" data-spot="2"></div>
+                    <div class="operator">=</div>
+                    <div class="result-spot" id="result">?</div>
+                </div>
+                <button id="clear-button">Clear</button>
+            </div>
+
+            <div id="compound-info-box">
+                <h3>Compound Information</h3>
+                <p id="compound-info-text">Drop two elements into the spots above to see if they form a compound.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
