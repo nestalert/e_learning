@@ -8,10 +8,27 @@
     <link rel="icon" type="image/x-icon" href="pt-square.svg">
 </head>
 <body>
-    <div class="container">
-        <h1>Learning about the Periodic Table</h1>
-        <div id="periodic-table-container">
+
+    <div class="start-screen">
+        <h1>Periodic Table Compound Challenge!</h1>
+        <p>Drag and drop elements to form the compound hinted by the character.</p>
+        <button id="play-button">Play Game</button>
+    </div>
+
+    <div class="game-container hidden">
+        <div class="game-info-bar">
+            <div id="timer-display">Time: 0s</div>
+            <div id="score-display">Score: 0</div>
         </div>
+
+        <div id="periodic-table-container">
+            </div>
+
+        <div class="character-hint-area">
+             <img id="character-image" src="placeholder.png" alt="Character" style="width: 100px; height: auto; margin-bottom: 10px;">
+            <div id="hint-text">Hint will appear here.</div>
+        </div>
+
 
         <div class="compound-checker-area">
             <div class="reaction-panel">
@@ -27,12 +44,20 @@
             </div>
 
             <div id="compound-info-box">
-                <h3>Compound Information</h3>
-                <p id="compound-info-text">Drop two elements into the spots above to see if they form a compound.</p>
+                <h3>Feedback</h3>
+                <p id="compound-info-text">Drop two elements into the spots above.</p>
             </div>
         </div>
     </div>
-    
+
+    <div class="score-popup hidden">
+        <div class="score-popup-content">
+            <h2>Game Over!</h2>
+            <p id="final-score">Your final score: 0</p>
+            <button id="play-again-button">Play Again</button>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

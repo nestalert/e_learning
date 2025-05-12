@@ -1,12 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- DOM Elements ---
     const periodicTableContainer = document.getElementById('periodic-table-container');
     const inputSpot1 = document.getElementById('input1');
     const inputSpot2 = document.getElementById('input2');
     const resultSpot = document.getElementById('result');
     const clearButton = document.getElementById('clear-button');
-    const compoundInfoText = document.getElementById('compound-info-text');
+    const compoundInfoText = document.getElementById('compound-info-text'); // Repurposed for feedback
 
-    // Elements go here
+    // New Game Elements
+    const startScreen = document.querySelector('.start-screen');
+    const playButton = document.getElementById('play-button');
+    const gameContainer = document.querySelector('.game-container');
+    const timerDisplay = document.getElementById('timer-display');
+    const scoreDisplay = document.getElementById('score-display');
+    const characterImage = document.getElementById('character-image');
+    const hintText = document.getElementById('hint-text');
+    const scorePopup = document.querySelector('.score-popup');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const playAgainButton = document.getElementById('play-again-button');
+
+    // --- Game State Variables ---
+    let score = 0;
+    let timeLeft = 60; // Game duration in seconds (adjust as needed)
+    let timerInterval = null;
+    let gameActive = false; // To control game flow
+    let currentChallenge = null; // Stores the compound the player needs to form
+    let shuffledCompounds = []; // Array to hold compounds in a random order
+    let currentChallengeIndex = 0; // Index to track the current challenge in the shuffled list
+    let currentStrikes = 0; // Track incorrect attempts for the current challenge
+
+
+    let draggedElement = null;
+    let input1Symbol = null;
+    let input2Symbol = null;
+
+    // --- Data (Periodic Table and Compounds) ---
     const elements = [
         { "number": 1, "symbol": "H", "name": "Hydrogen", "category": "nonmetal", "xpos": 1, "ypos": 1 },
         { "number": 2, "symbol": "He", "name": "Helium", "category": "noble-gas", "xpos": 18, "ypos": 1 },
@@ -98,69 +126,193 @@ document.addEventListener('DOMContentLoaded', () => {
         { "number": 118, "symbol": "Og", "name": "Oganesson", "category": "noble-gas", "xpos": 18, "ypos": 7 }
     ];
 
-    // Compounds go here
-     const compounds = [
-        { elements: ["H", "O"], info: "H₂O - Water\nA vital substance for all known forms of life.", formula: "H₂O" },
-        { elements: ["Na", "Cl"], info: "NaCl - Sodium Chloride\nCommonly known as table salt.", formula: "NaCl" },
-        { elements: ["C", "O"], info: "CO₂ - Carbon Dioxide\nA greenhouse gas, essential for photosynthesis.", formula: "CO₂" },
-        { elements: ["H", "Cl"], info: "HCl - Hydrogen Chloride\nA strong acid, also known as hydrochloric acid.", formula: "HCl" },
-        { elements: ["N", "H"], info: "NH₃ - Ammonia\nA colorless gas with a pungent smell, used in fertilizers.", formula: "NH₃" },
-        { elements: ["S", "O"], info: "SO₂ - Sulfur Dioxide\nA toxic gas with a pungent odor, a major air pollutant.", formula: "SO₂" },
-        { elements: ["C", "H"], info: "CH₄ - Methane\nThe main component of natural gas.", formula: "CH₄" },
-        { elements: ["Na", "O"], info: "Na₂O - Sodium Oxide\nA solid white compound.", formula: "Na₂O" },
-        { elements: ["N", "O"], info: "N₂O - Nitrous Oxide\nAlso known as \"laughing gas\", a powerful anaesthetic.", formula: "N₂O" },
+    const compounds = [
+        { elements: ["H", "O"], info: "In its liquid form, animals need it to live.", explicitHint: "70% of the planet is covered in it.", formula: "H₂O" },
+        { elements: ["Na", "Cl"], info: "It's the main ingredient of table salt.", explicitHint: "Both elements are in the third row.", formula: "NaCl" },
+        { elements: ["C", "O"], info: "Plants breathe it in, we breathe it out.", explicitHint: "It's the opposite of oxygen, in a way.", formula: "CO₂" },
+        { elements: ["H", "Cl"], info: "A strong acid found in your stomach.", explicitHint: "The strongest acid, but it can't melt plastic.", formula: "HCl" },
+        { elements: ["N", "H"], info: "Has a very strong smell and is used in cleaning products.", explicitHint: "Mixing it with bleach creates a deadly gas.", formula: "NH₃" },
+        { elements: ["S", "O"], info: "A key component of acid rain.", explicitHint: "It smells like spoiled eggs.", formula: "SO₂" },
+        { elements: ["C", "H"], info: "The primary component of natural gas.", explicitHint: "Cows produce it, and it creates the greenhouse effect.", formula: "CH₄" },
+         { elements: ["Na", "O"], info: "Used to make glasses.", explicitHint: "Also fertilizer.", formula: "Na₂O" },
+         { elements: ["N", "O"], info: "A powerful anaesthetic.", explicitHint: "Also known as \"laughing gas\".", formula: "N₂O" },
     ];
 
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        }
+        return array;
+    }
 
-    let draggedElement = null;
-    let input1Symbol = null;
-    let input2Symbol = null;
 
+    // --- Initialization ---
+    // Render the periodic table on load
     elements.forEach(element => {
-        const elementDiv = document.createElement('div');
-        elementDiv.classList.add('element', element.category);
-        elementDiv.setAttribute('draggable', true);
-        elementDiv.style.gridColumnStart = element.xpos;
-        elementDiv.style.gridRowStart = element.ypos;
-        elementDiv.dataset.symbol = element.symbol;
-        elementDiv.dataset.name = element.name;
-        elementDiv.dataset.number = element.number;
-        elementDiv.dataset.category = element.category;
+       const elementDiv = document.createElement('div');
+       elementDiv.classList.add('element', element.category);
+       elementDiv.setAttribute('draggable', true);
+       elementDiv.style.gridColumnStart = element.xpos;
+       elementDiv.style.gridRowStart = element.ypos;
+       elementDiv.dataset.symbol = element.symbol;
+       elementDiv.dataset.name = element.name;
+       elementDiv.dataset.number = element.number;
+       elementDiv.dataset.category = element.category;
 
 
-        elementDiv.innerHTML = `
-            <div class="atomic-number">${element.number}</div>
-            <div class="symbol">${element.symbol}</div>
-            <div class="name">${element.name}</div>
-        `;
+       elementDiv.innerHTML = `
+           <div class="atomic-number">${element.number}</div>
+           <div class="symbol">${element.symbol}</div>
+           <div class="name">${element.name}</div>
+       `;
 
-        periodicTableContainer.appendChild(elementDiv);
+       periodicTableContainer.appendChild(elementDiv);
     });
 
-    // Drag and Drop
-    periodicTableContainer.addEventListener('dragstart', (event) => {
-        draggedElement = event.target.closest('.element');
-        if (!draggedElement) return;
 
-        event.dataTransfer.effectAllowed = 'copy'; // Change effectAllowed to 'copy'
-        event.dataTransfer.setData('text/plain', draggedElement.dataset.symbol);
-        // Also transfer element data for displaying in input spots
+    // Initially show the start screen and hide the game
+    startScreen.classList.remove('hidden');
+    gameContainer.classList.add('hidden');
+    scorePopup.classList.add('hidden');
+
+
+    // --- Game Functions ---
+
+    function startGame() {
+        score = 0;
+        timeLeft = 60; // Reset timer
+        gameActive = true; // Set game state
+        scoreDisplay.textContent = `Score: ${score}`;
+        updateTimerDisplay();
+
+        // Shuffle the compounds at the start of a new game
+        shuffledCompounds = shuffleArray([...compounds]); // Create a copy to avoid modifying original
+        currentChallengeIndex = 0; // Start with the first compound in the shuffled list
+        currentStrikes = 0; // Reset strikes for the new game
+
+
+        // Hide start screen, show game container
+        startScreen.classList.add('hidden');
+        scorePopup.classList.add('hidden'); // Ensure popup is hidden
+        gameContainer.classList.remove('hidden');
+
+        startTimer();
+        presentNewChallenge();
+    }
+
+    function endGame() {
+        gameActive = false; // Set game state
+        clearInterval(timerInterval); // Stop the timer
+
+        // Hide game container, show score popup
+        gameContainer.classList.add('hidden');
+        scorePopup.classList.remove('hidden');
+        finalScoreDisplay.textContent = `Your final score: ${score}`;
+
+        // Optional: Reset input spots and feedback area when game ends
+        clearInputSpots();
+        compoundInfoText.textContent = "Game Over!";
+        resultSpot.innerHTML = "?";
+        resultSpot.style.backgroundColor = '#ddd';
+        resultSpot.classList.remove('correct', 'incorrect');
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }, 1000); // Update every 1 second
+    }
+
+    function updateTimerDisplay() {
+        timerDisplay.textContent = `Time: ${timeLeft}s`;
+         // Optional: Add styling for low time
+         if (timeLeft <= 10) {
+             timerDisplay.style.color = 'red';
+         } else {
+             timerDisplay.style.color = ''; // Reset to default
+         }
+    }
+
+    function presentNewChallenge() {
+        // Reset strikes for the new challenge
+        currentStrikes = 0;
+
+        // Clear previous input and feedback
+        clearInputSpots();
+        resultSpot.innerHTML = "?";
+        resultSpot.style.backgroundColor = '#ddd';
+        resultSpot.classList.remove('correct', 'incorrect');
+        compoundInfoText.textContent = "Drag and drop the two elements here."; // Default feedback
+
+        // Get the next compound from the shuffled list
+        if (currentChallengeIndex < shuffledCompounds.length) {
+            currentChallenge = shuffledCompounds[currentChallengeIndex];
+            currentChallengeIndex++; // Move to the next index for the next challenge
+        } else {
+             // If we run out of unique challenges, end the game
+             endGame();
+             return; // Stop if game ended
+        }
+
+
+        // Update the character image (using placeholder or static for now)
+        characterImage.src = "papa.png"; // Update this if you have character images
+
+        // Display the initial hint
+        hintText.textContent = currentChallenge.info;
+    }
+
+    function clearInputSpots() {
+         inputSpot1.innerHTML = "";
+         inputSpot2.innerHTML = "";
+         const allCategoryClasses = elements.map(el => el.category);
+         inputSpot1.classList.remove('filled', 'correct', 'incorrect', ...allCategoryClasses);
+         inputSpot2.classList.remove('filled', 'correct', 'incorrect', ...allCategoryClasses);
+
+         inputSpot1.style.borderColor = '#ccc'; // Reset border color
+         inputSpot2.style.borderColor = '#ccc'; // Reset border color
+
+         input1Symbol = null;
+         input2Symbol = null;
+    }
+
+
+    // --- Drag and Drop Handlers ---
+
+    // Handler for when dragging starts on an element
+    periodicTableContainer.addEventListener('dragstart', (event) => {
+        if (!gameActive) return; // Only allow dragging if game is active
+
+        draggedElement = event.target.closest('.element');
+        if (!draggedElement) return; // Ensure a valid element is being dragged
+
+        event.dataTransfer.effectAllowed = 'copy';
+        // Set dataTransfer data - includes symbol, name, number, category
+        event.dataTransfer.setData('text/plain', draggedElement.dataset.symbol); // Fallback/compatibility
         event.dataTransfer.setData('text/element-symbol', draggedElement.dataset.symbol);
         event.dataTransfer.setData('text/element-name', draggedElement.dataset.name);
         event.dataTransfer.setData('text/element-number', draggedElement.dataset.number);
         event.dataTransfer.setData('text/element-category', draggedElement.dataset.category);
 
-
+        // Add a class for styling while dragging (optional, for visual feedback)
         setTimeout(() => {
-            draggedElement.classList.add('dragging');
+            if(draggedElement) draggedElement.classList.add('dragging');
         }, 0);
     });
 
+    // Handler for drag over the periodic table container (can keep this basic one)
     periodicTableContainer.addEventListener('dragover', (event) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'copy'; // Change dropEffect to 'copy'
+        if (!gameActive) return;
+        event.preventDefault(); // Necessary to allow dropping within the container (though drops are handled by spots)
     });
 
+     // Handler for when dragging ends (regardless of where it's dropped)
      periodicTableContainer.addEventListener('dragend', () => {
         if (draggedElement) {
             draggedElement.classList.remove('dragging');
@@ -172,34 +324,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputSpots = document.querySelectorAll('.input-spot');
 
     inputSpots.forEach(spot => {
+        // Handler for drag over an input spot - allows dropping on the spot
         spot.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'copy';
-            spot.style.borderColor = '#4CAF50';
+            if (!gameActive) return; // Only allow dragover if game is active
+            event.preventDefault(); // Necessary to allow dropping on this element
+            event.dataTransfer.dropEffect = 'copy'; // Show 'copy' cursor
+
+             // Provide visual feedback on dragover if the spot is empty
+            if (!spot.classList.contains('filled')) {
+                 spot.style.borderColor = '#4CAF50'; // Highlight the spot
+            }
         });
 
+        // Handler for when drag leaves an input spot - remove visual feedback
         spot.addEventListener('dragleave', (event) => {
+             if (!gameActive) return; // Only react if game is active
+             // Reset border color if the spot is empty
              if (!spot.classList.contains('filled')) {
-                spot.style.borderColor = '#ccc';
+                 spot.style.borderColor = '#ccc'; // Reset border color
              }
         });
 
+        // Handler for dropping an element onto an input spot
         spot.addEventListener('drop', (event) => {
-            event.preventDefault();
-             if (!spot.classList.contains('filled')) {
-                spot.style.borderColor = '#ccc';
-             }
+            if (!gameActive) return; // Only allow dropping if game is active
+            event.preventDefault(); // Prevent default behavior (like opening the element as a link)
+
+            // Reset dragover border color after drop
+            spot.style.borderColor = '#ccc';
 
 
+            // Prevent dropping if the spot is already filled
+            if (spot.classList.contains('filled')) {
+                compoundInfoText.textContent = "This spot is already filled. Clear to try again.";
+                return; // Stop processing the drop
+            }
+
+            // --- Process the dropped element ---
             const symbol = event.dataTransfer.getData('text/element-symbol');
             const name = event.dataTransfer.getData('text/element-name');
             const number = event.dataTransfer.getData('text/element-number');
             const category = event.dataTransfer.getData('text/element-category');
 
-            // Clear previous content and classes
+            // Clear previous content and classes for this spot
             spot.innerHTML = "";
             const allCategoryClasses = elements.map(el => el.category);
-            spot.classList.remove('filled', ...allCategoryClasses);
+            spot.classList.remove('filled', 'correct', 'incorrect', ...allCategoryClasses); // Remove feedback classes too
 
             // Display the dropped element's info in the input spot
             spot.innerHTML = `
@@ -210,73 +380,138 @@ document.addEventListener('DOMContentLoaded', () => {
             spot.classList.add('filled');
             spot.classList.add(category); // Add category class for styling
 
+            // Update the symbols held in state for compound checking
             if (spot.id === 'input1') {
                 input1Symbol = symbol;
             } else if (spot.id === 'input2') {
                 input2Symbol = symbol;
             }
 
-            checkForCompound();
+            // Check for compound only when both spots are filled
+            if (input1Symbol && input2Symbol) {
+                checkForCompound();
+            } else {
+                 // Update feedback if only one spot is filled
+                compoundInfoText.textContent = "Drop the second element.";
+            }
         });
     });
 
-    // Compound Checking Logic
-    function checkForCompound() {
-        if (input1Symbol && input2Symbol) {
-            if (input1Symbol === input2Symbol) { //This is just because two same elements mess up the logic
-            foundCompound = undefined;
-            }
-            else {
-                const foundCompound = compounds.find(compound =>
-                    compound.elements.includes(input1Symbol) && compound.elements.includes(input2Symbol) && compound.elements.length === 2 // Ensure only two elements are involved
-                );
 
-                if (foundCompound) {
-                    resultSpot.innerHTML = `
-                        <div class="symbol">${foundCompound.formula}</div>
-                        <div class="name">${foundCompound.info.split('\n')[0].split(' - ')[1]}</div>
-                    `; // Display formula and basic name
-                    resultSpot.style.backgroundColor = '#C8E6C9'; // Light green for success
-                    compoundInfoText.textContent = foundCompound.info; // Display full info in the info box
-                } else {
-                    resultSpot.innerHTML = "?";
-                    resultSpot.style.backgroundColor = '#FFCDD2'; // Light red for no compound
-                    compoundInfoText.textContent = "No known compound formed from this combination in our list."; // Update info box
-                }               
-            }
+    // --- Compound Checking Logic (Modified for Strikes) ---
+    function checkForCompound() {
+         // Remove previous feedback classes from input spots and result
+         inputSpot1.classList.remove('correct', 'incorrect');
+         inputSpot2.classList.remove('correct', 'incorrect');
+         resultSpot.classList.remove('correct', 'incorrect');
+
+
+         // Check if both symbols match the current challenge elements (order doesn't matter)
+         const isCorrectPair =
+             currentChallenge && // Ensure currentChallenge is set
+             currentChallenge.elements.includes(input1Symbol) &&
+             currentChallenge.elements.includes(input2Symbol) &&
+             input1Symbol !== input2Symbol; // Ensure they are different elements
+
+
+        if (isCorrectPair) {
+            // Correct guess!
+            score++; // Increment score
+            scoreDisplay.textContent = `Score: ${score}`; // Update score display
+
+            // Provide positive feedback
+            resultSpot.innerHTML = `
+                <div class="symbol">${currentChallenge.formula}</div>
+                <div class="name">${currentChallenge.info.split('\n')[0].split(' - ')[1] || 'Compound Formed!'}</div>
+            `; // Display formula and basic name (handle potential missing info)
+            resultSpot.classList.add('correct');
+            compoundInfoText.textContent = `Correct! It's ${currentChallenge.formula}. Getting ready for the next one...`;
+
+            // Add correct class to input spots for visual feedback
+            inputSpot1.classList.add('correct');
+            inputSpot2.classList.add('correct');
+
+            // Reset strikes for the next challenge
+            currentStrikes = 0;
+
+            // Present a new challenge after a short delay
+            setTimeout(presentNewChallenge, 1500); // 1.5 second delay
         } else {
-            resultSpot.innerHTML = "?";
-             resultSpot.style.backgroundColor = '#ddd'; // Default color
-             compoundInfoText.textContent = "Drop two elements into the spots above to see if they form a compound."; // Update info box
+             // Incorrect guess - but only if both slots are filled and they are not the correct pair
+             if (input1Symbol && input2Symbol) {
+                currentStrikes++; // Increment strike count
+
+                resultSpot.innerHTML = "?";
+                resultSpot.classList.add('incorrect');
+
+                // Provide feedback based on the strike count
+                if (currentStrikes === 1) {
+                    // 1st Strike: More explicit hint
+                    hintText.textContent += " " + currentChallenge.explicitHint;
+                    compoundInfoText.textContent = "Here's a stronger hint!";
+                     inputSpot1.classList.add('incorrect');
+                     inputSpot2.classList.add('incorrect');
+                     // Clear slots after incorrect attempt
+                     setTimeout(clearInputSpots, 1000); // Clear slots shortly after feedback
+                } else if (currentStrikes === 2) {
+                     // 2nd Strike: Reveal one of the correct elements (text hint)
+                     const revealedElementSymbol = currentChallenge.elements[0]; // Reveal the first element's symbol
+                     const revealedElement = elements.find(el => el.symbol === revealedElementSymbol);
+                     const revealedElementName = revealedElement ? revealedElement.name : revealedElementSymbol; // Get name if found
+
+                     hintText.textContent += " " + `One of the elements is ${revealedElementName} (${revealedElementSymbol}).`;
+                     inputSpot1.classList.add('incorrect');
+                     inputSpot2.classList.add('incorrect');
+                     // Clear slots after incorrect attempt
+                     setTimeout(clearInputSpots, 1000); // Clear slots shortly after feedback
+                } else if (currentStrikes >= 3) { // 3rd strike or more
+                    // 3rd Strike: Reveal the compound, no point awarded, move to next challenge
+                    const compoundName = currentChallenge.info.split('\n')[0].split(' - ')[1] || 'Compound';
+                    resultSpot.innerHTML = `
+                        <div class="symbol">${currentChallenge.formula}</div>
+                        <div class="name">${compoundName}</div>
+                    `;
+                     resultSpot.classList.add('incorrect'); // Indicate it was a miss
+                    compoundInfoText.textContent = `Third strike! The compound was ${currentChallenge.formula} (${compoundName}). No point awarded.`;
+
+                    // Add incorrect class to input spots for visual feedback before clearing
+                    inputSpot1.classList.add('incorrect');
+                    inputSpot2.classList.add('incorrect');
+
+                    // Present a new challenge after a delay
+                    setTimeout(presentNewChallenge, 2500); // Longer delay to read the revealed answer
+
+                    // Ensure slots are cleared even after the reveal
+                    setTimeout(clearInputSpots, 1000);
+                }
+
+             } else {
+
+             }
         }
     }
 
+    // --- Clear Button Listener ---
     clearButton.addEventListener('click', () => {
-        inputSpot1.innerHTML = "";
-        inputSpot2.innerHTML = "";
-        const allCategoryClasses = elements.map(el => el.category);
-        inputSpot1.classList.remove('filled', ...allCategoryClasses);
-        inputSpot2.classList.remove('filled', ...allCategoryClasses);
-
-        inputSpot1.style.borderColor = '#ccc';
-        inputSpot2.style.borderColor = '#ccc';
-
+        if (!gameActive) return;
+        clearInputSpots();
         resultSpot.innerHTML = "?";
         resultSpot.style.backgroundColor = '#ddd';
-
-        compoundInfoText.textContent = "Drop two elements into the spots above to see if they form a compound.";
-
-        input1Symbol = null;
-        input2Symbol = null;
+        resultSpot.classList.remove('correct', 'incorrect');
+        compoundInfoText.textContent = "Drop two elements into the spots above.";
     });
-
 
     document.body.addEventListener('dragover', (event) => {
         event.preventDefault();
     });
 
-
     document.body.addEventListener('drop', (event) => {
         event.preventDefault();
+        if (!event.target.closest('.input-spot') && !event.target.closest('.element')) {
+        }
     });
+
+    playButton.addEventListener('click', startGame);
+    playAgainButton.addEventListener('click', startGame);
+
 });
