@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { "number": 118, "symbol": "Og", "name": "Oganesson", "category": "noble-gas", "xpos": 18, "ypos": 7 }
     ];
 
-    const compounds = [
+       const compounds = [
         { elements: ["H", "O"], info: "In its liquid form, animals need it to live.", explicitHint: "70% of the planet is covered in it.", formula: "H₂O" },
         { elements: ["Na", "Cl"], info: "It's the main ingredient of table salt.", explicitHint: "Both elements are in the third row.", formula: "NaCl" },
         { elements: ["C", "O"], info: "Plants breathe it in, we breathe it out.", explicitHint: "It's the opposite of oxygen, in a way.", formula: "CO₂" },
@@ -134,8 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { elements: ["N", "H"], info: "Has a very strong smell and is used in cleaning products.", explicitHint: "Mixing it with bleach creates a deadly gas.", formula: "NH₃" },
         { elements: ["S", "O"], info: "A key component of acid rain.", explicitHint: "It smells like spoiled eggs.", formula: "SO₂" },
         { elements: ["C", "H"], info: "The primary component of natural gas.", explicitHint: "Cows produce it, and it creates the greenhouse effect.", formula: "CH₄" },
-         { elements: ["Na", "O"], info: "Used to make glasses.", explicitHint: "Also fertilizer.", formula: "Na₂O" },
-         { elements: ["N", "O"], info: "A powerful anaesthetic.", explicitHint: "Also known as \"laughing gas\".", formula: "N₂O" },
+        { elements: ["Na", "O"], info: "Used to make glasses.", explicitHint: "Also fertilizer.", formula: "Na₂O" },
+        { elements: ["N", "O"], info: "A powerful anaesthetic.", explicitHint: "Also known as \"laughing gas\".", formula: "N₂O" },
+        { elements: ["Ag", "I"], info: "It was used in the first photographic machines.", explicitHint: "It can also make clouds rain.", formula: "AgI" },
+        { elements: ["K", "Br"], info: "It can cure dogs from epilepsy.", explicitHint: "Usually in the form of a white powder.", formula: "UO₂" },
     ];
 
     function shuffleArray(array) {
@@ -181,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame() {
         score = 0;
-        timeLeft = 60; // Reset timer
+        timeLeft = 90; // Reset timer
         gameActive = true; // Set game state
         scoreDisplay.textContent = `Score: ${score}`;
         updateTimerDisplay();
@@ -472,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="name">${compoundName}</div>
                     `;
                      resultSpot.classList.add('incorrect'); // Indicate it was a miss
-                    compoundInfoText.textContent = `Third strike! The compound was ${currentChallenge.formula} (${compoundName}). No point awarded.`;
+                    compoundInfoText.textContent = `Third strike! The compound was ${currentChallenge.formula}. No point awarded.`;
 
                     // Add incorrect class to input spots for visual feedback before clearing
                     inputSpot1.classList.add('incorrect');
