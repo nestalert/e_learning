@@ -9,6 +9,7 @@ body {
     padding: 20px; /* Add some padding */
     box-sizing: border-box; /* Include padding in element's total width and height */
     position: relative; /* Needed for absolute positioning of popup */
+    
 }
 
 .container { /* This class is now wrapped by .game-container, might need adjustments later */
@@ -126,10 +127,13 @@ body {
 }
 
 .element.dragging {
-    opacity: 0.5;
-    position: absolute; /* Position absolutely when dragging */
+    opacity: 0;       /* Make original semi-transparent */
+    position: absolute;
     z-index: 1000;
+    pointer-events: none; /* Prevent weird mouse events on drag preview */
 }
+
+
 
 .element .symbol {
     font-size: 18px;
@@ -163,6 +167,13 @@ body {
     align-items: flex-start; /* Align items to the top */
     gap: 20px; /* Space between the reaction panel and info box */
     flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.feedback-and-search {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;  /* space between feedback and search */
+  max-width: 400px; /* same max width as #compound-info-box */
 }
 
 .reaction-panel {
@@ -378,3 +389,47 @@ body {
         max-width: 100%; /* Allow full width on smaller screens */
     }
 }
+.glow-correct {
+    box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.7);
+    transition: box-shadow 0.3s ease;
+}
+
+.glow-wrong {
+    box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.7);
+    transition: box-shadow 0.3s ease;
+}
+
+#element-search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+#element-search-container .material-symbols-outlined {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  pointer-events: none; 
+  font-size: 20px;
+}
+
+#element-search {
+  width: 100%;
+  padding: 10px 10px 10px 40px; 
+  font-size: 16px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+
+.element.glow-highlight {
+  box-shadow: 0 0 15px 5px rgb(0, 8, 255);
+  transition: box-shadow 0.3s ease;
+  position: relative; /* important to keep glow visually correct */
+  z-index: 10;        /* ensure it appears above others */
+}
+

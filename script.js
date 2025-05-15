@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scorePopup = document.querySelector('.score-popup');
     const finalScoreDisplay = document.getElementById('final-score');
     const playAgainButton = document.getElementById('play-again-button');
+    const searchInput = document.getElementById('element-search');
 
     // --- Game State Variables ---
     let score = 0;
@@ -285,6 +286,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    function showFeedback(isCorrect) {
+    const checkerBox = document.getElementById('compound-info-box');
+    if (!checkerBox) return;
+
+    checkerBox.classList.add(isCorrect ? 'glow-correct' : 'glow-wrong');
+
+    setTimeout(() => {
+        checkerBox.classList.remove('glow-correct');
+        checkerBox.classList.remove('glow-wrong');
+    }, 1000); // 1 second glow
+}
+
+
+
     // --- Drag and Drop Handlers ---
 
     // Handler for when dragging starts on an element
@@ -293,6 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         draggedElement = event.target.closest('.element');
         if (!draggedElement) return; // Ensure a valid element is being dragged
+        draggedElement.classList.remove('glow-highlight');
 
         event.dataTransfer.effectAllowed = 'copy';
         // Set dataTransfer data - includes symbol, name, number, category
@@ -428,6 +444,8 @@ document.addEventListener('DOMContentLoaded', () => {
             `; // Display formula and basic name (handle potential missing info)
             resultSpot.classList.add('correct');
             compoundInfoText.textContent = `Correct! It's ${currentChallenge.formula}. Getting ready for the next one...`;
+            showFeedback(true);
+
 
             // Add correct class to input spots for visual feedback
             inputSpot1.classList.add('correct');
@@ -445,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 resultSpot.innerHTML = "?";
                 resultSpot.classList.add('incorrect');
+                //showFeedback(false);
 
                 // Provide feedback based on the strike count
                 if (currentStrikes === 1) {
@@ -515,5 +534,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     playButton.addEventListener('click', startGame);
     playAgainButton.addEventListener('click', startGame);
+
+    searchInput.addEventListener('input', () => {
+    const value = searchInput.value.trim().toLowerCase();
+    const allElements = document.querySelectorAll('.element');
+
+    allElements.forEach(el => {
+        const symbol = el.dataset.symbol.toLowerCase();
+        if (value && symbol === value) {
+            el.classList.add('glow-highlight');
+        } else {
+            el.classList.remove('glow-highlight');
+        }
+    });
+});
 
 });
