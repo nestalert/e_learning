@@ -4,6 +4,8 @@ body {
     justify-content: center;
     align-items: flex-start; /* Align items to the top */
     min-height: 100vh;
+    padding-left: 60px; /* match collapsed sidebar width */
+    transition: padding-left 0.3s ease;    
     margin: 0;
     background-color: #f0f0f0;
     padding: 20px; /* Add some padding */
@@ -11,6 +13,349 @@ body {
     position: relative; /* Needed for absolute positioning of popup */
     
 }
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 60px; /* collapsed */
+  background: #333;
+  overflow-x: hidden;
+  padding-top: 10px;
+  transition: width 0.3s ease;
+  z-index: 10;
+}
+
+.sidebar:hover {
+  width: 250px; /* expanded */
+}
+
+/* Sidebar menu items */
+.sidebar ul {
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  list-style: none;
+}
+
+.sidebar ul li a {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: white;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Icon always visible, on the left */
+.sidebar .icon {
+  min-width: 24px;
+  margin-right: 16px;
+  font-size: 20px;
+  text-align: center;
+  color: white;
+}
+
+/* Text hidden by default */
+.sidebar .text {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Reveal text on hover */
+.sidebar:hover .text {
+  opacity: 1;
+}
+
+/* Optional: highlight on hover */
+.sidebar ul li a:hover {
+  background-color: #0b7dda;
+}
+
+/* Submenu hidden by default */
+.submenu {
+  display: none;
+  flex-direction: column;
+  padding-left: 40px;
+  background: #444;
+}
+
+.submenu li a {
+  padding: 8px 0;
+  color: white;
+  font-size: 14px;
+}
+
+/* Optional: arrow icon styling */
+.arrow {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* Show submenu when active */
+.has-submenu.open .submenu {
+  display: flex;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+/* The circle */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px; width: 18px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Checked state */
+.switch input:checked + .slider {
+  background-color: #2196F3;
+}
+
+/* Move the circle when checked */
+.switch input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* Text next to toggle */
+.toggle-text {
+  vertical-align: middle;
+  color: white;
+  font-size: 14px;
+  user-select: none;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  color: white;
+}
+
+.toggle-label {
+  font-size: 14px;
+  user-select: none;
+}
+
+body.dark-mode {
+  background-color: #292727;
+  color: #eee;
+}
+
+/* Adjust sidebar colors in dark mode */
+body.dark-mode .sidebar {
+  background-color: #222;
+}
+
+body.dark-mode .sidebar ul li a:hover {
+  background-color: #0b5dda;
+}
+
+
+/* === Compound Checker and Feedback Box === */
+body.dark-mode .reaction-panel,
+body.dark-mode #compound-info-box {
+  background-color: #2c2c2c;
+  border: 1px solid #ffffff;
+  color: #eee;
+}
+
+body.dark-mode .reaction-panel h2,
+body.dark-mode #compound-info-box h2 {
+  color: #fff;
+}
+
+body.dark-mode #compound-info-text {
+  color: #ccc;
+}
+
+
+
+body.dark-mode .operator {
+  color: #aaa;
+}
+
+/* === Clear Button === */
+body.dark-mode #clear-button {
+  background-color: #b33a3a;
+  color: white;
+  border: none;
+}
+
+body.dark-mode #clear-button:hover {
+  background-color: #e94b4b;
+}
+
+/* === Search Container === */
+body.dark-mode #element-search-container {
+  background-color: #3a3a3a;
+  border-radius: 6px;
+  border: 1px solid #ffffff;
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  position: relative;
+}
+
+body.dark-mode #element-search-container .material-symbols-outlined {
+  color: #bbb;
+}
+
+body.dark-mode #element-search {
+  background-color: transparent;
+  border: none;
+  color: #eee;
+  font-size: 16px;
+  width: 100%;
+  padding: 10px 10px 10px 0;
+}
+
+body.dark-mode #element-search::placeholder {
+  color: #999;
+}
+
+/* Focus effect */
+body.dark-mode #element-search:focus {
+  outline: none;
+  color: #fff;
+}
+
+body.dark-mode #element-search-container:focus-within {
+  border-color: #0026ff;
+}
+
+/* === Sidebar Dark Enhancements (if needed) === */
+body.dark-mode .sidebar {
+  background-color: #1f1f1f;
+}
+
+body.dark-mode .sidebar .text,
+body.dark-mode .sidebar .icon {
+  color: #eee;
+}
+
+body.dark-mode .submenu {
+  background-color: #2e2e2e;
+}
+
+body.dark-mode .submenu li a {
+  color: #ccc;
+}
+
+/* Optional: Toggle text inside switch */
+body.dark-mode .switch .toggle-text {
+  color: #ccc;
+}
+
+body.dark-mode .game-info-bar {
+  background-color: #2a2a2a; /* dark background */
+  color: #fff;               /* white text */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  border: 1px solid #ffffff; /* optional green border for consistency */
+}
+
+body.dark-mode #timer-display,
+body.dark-mode #score-display {
+  color: #fff; /* ensure timer/score text is bright */
+}
+
+/* --- Start Screen --- */
+body.dark-mode .start-screen {
+  background-color: #2c2c2c;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  border: 1px solid #ffffff;
+}
+
+body.dark-mode .start-screen h1 {
+  color: #ffffff;
+}
+
+body.dark-mode .start-screen p {
+  color: #ccc;
+}
+
+/* --- Character Hint Area --- */
+body.dark-mode .character-hint-area {
+  background-color: #2c2c2c;
+  color: #eee;
+  border: 1px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode #hint-text {
+  color: #ccc;
+}
+
+/* --- Score Popup Overlay --- */
+body.dark-mode .score-popup {
+  background-color: rgba(0, 0, 0, 0.8); /* darker overlay */
+}
+
+/* --- Score Popup Content Box --- */
+body.dark-mode .score-popup-content {
+  background-color: #2c2c2c;
+  color: #fff;
+  border: 1px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Game Over Text --- */
+body.dark-mode .score-popup-content h3 {
+  color: #fff;
+}
+
+/* --- Final Score Text --- */
+body.dark-mode .score-popup-content p {
+  color: #ccc;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 .container { /* This class is now wrapped by .game-container, might need adjustments later */
     text-align: center;
@@ -433,3 +778,9 @@ body {
   z-index: 10;        /* ensure it appears above others */
 }
 
+.glow-hint {
+  box-shadow: 0 0 15px 5px rgba(197, 168, 0, 0.8); /* golden glow */
+  transition: box-shadow 0.3s ease;
+  position: relative;  
+  z-index: 20;
+}

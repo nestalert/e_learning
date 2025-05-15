@@ -7,9 +7,64 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="pt-square.svg">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.0/css/all.css" crossorigin="anonymous">
 </head>
 <body>
 
+    <div class="sidebar">
+        
+        <ul>
+            <li>
+                <a href="#" class="logo">
+                    <span class="icon"><i class="fas fa-code"></i></span>
+                    <span class="text">sidebar</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="logo">
+                    <span class="icon"><i class="fas fa-house"></i></span>
+                    <span class="text">home</span>
+                </a>
+            </li>
+            <li class="has-submenu">
+                <a href="#" class="logo" id="settings-toggle">
+                    <span class="icon"><i class="fas fa-gear"></i></span>
+                    <span class="text">Settings</span>
+                    <span class="arrow"><i class="fas fa-chevron-down"></i></span>
+                </a>
+            <ul class="submenu" id="settings-submenu">
+                <li>
+                    <div class="toggle-row">
+                        <span class="toggle-label">Dark Mode</span>
+                        <label class="switch">
+                            <input type="checkbox" id="dark-mode-toggle" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </li>
+                <li>
+                    <div class="toggle-row">
+                        <span class="toggle-label">Hints</span>
+                        <label class="switch">
+                            <input type="checkbox" id="" />
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </li>
+                <li><a href="#"><span class="text">Profile</span></a></li>
+                <li><a href="#"><span class="text">Logout</span></a></li>
+            </ul>
+            </li>
+
+            <li>
+                <a href="#" class="logo">
+                    <span class="icon"><i class="fa-solid fa-bell"></i></span>
+                    <span class="text">music</span>
+                </a>
+            </li>
+        </ul>
+
+    </div>
     <div class="start-screen">
         <h1>Periodic Table Compound Challenge!</h1>
         <p>Drag and drop elements to form the compound hinted by the character.</p>
@@ -46,7 +101,7 @@
 
             <div class="feedback-and-search">
 				<div id="compound-info-box">
-					<h3>Feedback</h3>
+					<h2>Feedback</h2>
 						<p id="compound-info-text">Drop two elements into the spots above.</p>
 				</div>
 
@@ -67,7 +122,7 @@
 
     <div class="score-popup hidden">
         <div class="score-popup-content">
-            <h2>Game Over!</h2>
+            <h3>Game Over!</h3>
             <p id="final-score">Your final score: 0</p>
             <button id="play-again-button">Play Again</button>
         </div>

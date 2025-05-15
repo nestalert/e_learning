@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let input1Symbol = null;
     let input2Symbol = null;
 
+
     // --- Data (Periodic Table and Compounds) ---
     const elements = [
         { "number": 1, "symbol": "H", "name": "Hydrogen", "category": "nonmetal", "xpos": 1, "ypos": 1 },
@@ -436,7 +437,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Correct guess!
             score++; // Increment score
             scoreDisplay.textContent = `Score: ${score}`; // Update score display
-
+            const glowingHint = document.querySelector('.element.glow-hint');
+            if (glowingHint) {
+                glowingHint.classList.remove('glow-hint');
+            }
             // Provide positive feedback
             resultSpot.innerHTML = `
                 <div class="symbol">${currentChallenge.formula}</div>
@@ -453,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Reset strikes for the next challenge
             currentStrikes = 0;
-
+                
             // Present a new challenge after a short delay
             setTimeout(presentNewChallenge, 1500); // 1.5 second delay
         } else {
@@ -483,10 +487,17 @@ document.addEventListener('DOMContentLoaded', () => {
                      hintText.textContent += " " + `One of the elements is ${revealedElementName} (${revealedElementSymbol}).`;
                      inputSpot1.classList.add('incorrect');
                      inputSpot2.classList.add('incorrect');
+                     const elementTile = document.querySelector(`.element[data-symbol="${revealedElementSymbol}"]`);
+                    glowingElementTile = document.querySelector(`.element[data-symbol="${revealedElementSymbol}"]`);
+                    if (glowingElementTile) {
+                       glowingElementTile.classList.add('glow-hint');
+                    }
+
                      // Clear slots after incorrect attempt
                      setTimeout(clearInputSpots, 1000); // Clear slots shortly after feedback
                 } else if (currentStrikes >= 3) { // 3rd strike or more
                     // 3rd Strike: Reveal the compound, no point awarded, move to next challenge
+                    
                     const compoundName = currentChallenge.info.split('\n')[0].split(' - ')[1] || 'Compound';
                     resultSpot.innerHTML = `
                         <div class="symbol">${currentChallenge.formula}</div>
@@ -498,7 +509,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Add incorrect class to input spots for visual feedback before clearing
                     inputSpot1.classList.add('incorrect');
                     inputSpot2.classList.add('incorrect');
-
+                    
+                    if (glowingElementTile) {
+                        glowingElementTile.classList.remove('glow-hint');
+                        glowingElementTile = null;
+                    }   
+                    showFeedback(false);
                     // Present a new challenge after a delay
                     setTimeout(presentNewChallenge, 2500); // Longer delay to read the revealed answer
 
@@ -547,6 +563,21 @@ document.addEventListener('DOMContentLoaded', () => {
             el.classList.remove('glow-highlight');
         }
     });
+});
+
+document.getElementById('settings-toggle').addEventListener('click', function (e) {
+  e.preventDefault();
+  const parent = this.closest('.has-submenu');
+  parent.classList.toggle('open');
+});
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+darkModeToggle.addEventListener('change', () => {
+  if (darkModeToggle.checked) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
 });
 
 });
