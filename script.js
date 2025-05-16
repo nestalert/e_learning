@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalScoreDisplay = document.getElementById('final-score');
     const playAgainButton = document.getElementById('play-again-button');
     const searchInput = document.getElementById('element-search');
+    const homeButton = document.getElementById('home-button');
+    const toggleHints = document.getElementById('toggle-hints');        
+    const musicToggle = document.getElementById('music-toggle');
+    const gameAudio = document.getElementById('game-audio');
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeInline = document.getElementById('volume-inline');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
 
     // --- Game State Variables ---
     let score = 0;
@@ -29,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let shuffledCompounds = []; // Array to hold compounds in a random order
     let currentChallengeIndex = 0; // Index to track the current challenge in the shuffled list
     let currentStrikes = 0; // Track incorrect attempts for the current challenge
-
+    let hintsEnabled = true; // default state
+    let musicPlaying = false;
 
     let draggedElement = null;
     let input1Symbol = null;
@@ -180,10 +188,35 @@ document.addEventListener('DOMContentLoaded', () => {
     gameContainer.classList.add('hidden');
     scorePopup.classList.add('hidden');
 
+    
+
+    homeButton.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Show start screen
+        startScreen.classList.remove('hidden');
+
+        // Hide game and score popup
+        gameContainer.classList.add('hidden');
+        scorePopup.classList.add('hidden');
+
+        // Stop the timer if running
+        clearInterval(timerInterval);
+        gameActive = false;
+
+        // Optional: reset timer display
+        timerDisplay.textContent = 'Time: 0s';
+        scoreDisplay.textContent = 'Score: 0';
+
+        // Optional: reset feedback text
+        compoundInfoText.textContent = 'Drop two elements into the spots above.';
+        });
 
     // --- Game Functions ---
 
     function startGame() {
+        gameAudio.play();
+        musicPlaying = !musicPlaying;
         score = 0;
         timeLeft = 90; // Reset timer
         gameActive = true; // Set game state
@@ -269,8 +302,10 @@ document.addEventListener('DOMContentLoaded', () => {
         characterImage.src = "papa.png"; // Update this if you have character images
 
         // Display the initial hint
+
         hintText.textContent = currentChallenge.info;
-    }
+
+        }
 
     function clearInputSpots() {
          inputSpot1.innerHTML = "";
@@ -472,7 +507,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Provide feedback based on the strike count
                 if (currentStrikes === 1) {
                     // 1st Strike: More explicit hint
-                    hintText.textContent += " " + currentChallenge.explicitHint;
+                    if (hintsEnabled) {
+                        hintText.textContent += " " + currentChallenge.explicitHint;
+                    }
                     compoundInfoText.textContent = "Here's a stronger hint!";
                      inputSpot1.classList.add('incorrect');
                      inputSpot2.classList.add('incorrect');
@@ -483,15 +520,19 @@ document.addEventListener('DOMContentLoaded', () => {
                      const revealedElementSymbol = currentChallenge.elements[0]; // Reveal the first element's symbol
                      const revealedElement = elements.find(el => el.symbol === revealedElementSymbol);
                      const revealedElementName = revealedElement ? revealedElement.name : revealedElementSymbol; // Get name if found
-
-                     hintText.textContent += " " + `One of the elements is ${revealedElementName} (${revealedElementSymbol}).`;
+                    if (hintsEnabled) {
+                        hintText.textContent += " " + `One of the elements is ${revealedElementName} (${revealedElementSymbol}).`;
+                        
+                    }
                      inputSpot1.classList.add('incorrect');
                      inputSpot2.classList.add('incorrect');
                      const elementTile = document.querySelector(`.element[data-symbol="${revealedElementSymbol}"]`);
-                    glowingElementTile = document.querySelector(`.element[data-symbol="${revealedElementSymbol}"]`);
-                    if (glowingElementTile) {
+                     if (hintsEnabled) {
+                     glowingElementTile = document.querySelector(`.element[data-symbol="${revealedElementSymbol}"]`);
+                    
+                     if (glowingElementTile) {
                        glowingElementTile.classList.add('glow-hint');
-                    }
+                    }}
 
                      // Clear slots after incorrect attempt
                      setTimeout(clearInputSpots, 1000); // Clear slots shortly after feedback
@@ -509,11 +550,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Add incorrect class to input spots for visual feedback before clearing
                     inputSpot1.classList.add('incorrect');
                     inputSpot2.classList.add('incorrect');
-                    
+                    if (hintsEnabled) {
                     if (glowingElementTile) {
                         glowingElementTile.classList.remove('glow-hint');
                         glowingElementTile = null;
-                    }   
+                    }} 
                     showFeedback(false);
                     // Present a new challenge after a delay
                     setTimeout(presentNewChallenge, 2500); // Longer delay to read the revealed answer
@@ -570,7 +611,6 @@ document.getElementById('settings-toggle').addEventListener('click', function (e
   const parent = this.closest('.has-submenu');
   parent.classList.toggle('open');
 });
-const darkModeToggle = document.getElementById('dark-mode-toggle');
 
 darkModeToggle.addEventListener('change', () => {
   if (darkModeToggle.checked) {
@@ -579,5 +619,39 @@ darkModeToggle.addEventListener('change', () => {
     document.body.classList.remove('dark-mode');
   }
 });
+
+toggleHints.addEventListener('change', () => {
+  hintsEnabled = toggleHints.checked;
+
+  // If hints are turned OFF, remove only the extra part (not the base info)
+  if (!hintsEnabled && currentChallenge) {
+    hintText.textContent = currentChallenge.info;
+  }
+});
+
+musicToggle.addEventListener('click', (e) => {
+    e.preventDefault(); //prevent default link behavior
+
+    if (musicPlaying) {
+        gameAudio.pause();
+    } else {
+        gameAudio.play();
+    }
+
+    musicPlaying = !musicPlaying;
+    volumeSlider.style.display = musicPlaying ? 'block' : 'none';
+});
+
+volumeSlider.addEventListener('input', () => {
+    const value = parseFloat(volumeSlider.value);
+    const percent = Math.round(value * 100);
+
+    gameAudio.volume = value;
+
+    volumeInline.textContent = `${percent}%`;
+
+    volumeSlider.style.background =`linear-gradient(to right,rgb(0, 0, 0) ${percent}%, #ccc ${percent}%)`;
+});
+
 
 });

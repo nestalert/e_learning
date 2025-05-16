@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Come Learn Chemistry!</title>
+    <audio id="game-audio" src="aud1.ogg" loop></audio>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="pt-square.svg">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search" />
@@ -21,11 +22,12 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="logo">
+                <a href="#" class="logo" id="home-button">
                     <span class="icon"><i class="fas fa-house"></i></span>
-                    <span class="text">home</span>
+                    <span class="text">Home</span>
                 </a>
             </li>
+
             <li class="has-submenu">
                 <a href="#" class="logo" id="settings-toggle">
                     <span class="icon"><i class="fas fa-gear"></i></span>
@@ -46,22 +48,32 @@
                     <div class="toggle-row">
                         <span class="toggle-label">Hints</span>
                         <label class="switch">
-                            <input type="checkbox" id="" />
+                            <input type="checkbox" id="toggle-hints" checked />
                             <span class="slider"></span>
                         </label>
                     </div>
                 </li>
+
                 <li><a href="#"><span class="text">Profile</span></a></li>
                 <li><a href="#"><span class="text">Logout</span></a></li>
             </ul>
             </li>
 
-            <li>
-                <a href="#" class="logo">
-                    <span class="icon"><i class="fa-solid fa-bell"></i></span>
-                    <span class="text">music</span>
-                </a>
-            </li>
+            <li class="has-slider">
+  <a href="#" class="logo" id="music-toggle">
+  <span class="icon"><i class="fa-solid fa-bell"></i></span>
+  <span class="text">Music</span>
+  <span id="volume-inline" class="volume-percent">50%</span>
+</a>
+
+  <div class="volume-slider-container">
+  <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+  
+</div>
+
+</li>
+
+
         </ul>
 
     </div>
