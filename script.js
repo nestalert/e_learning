@@ -489,7 +489,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add correct class to input spots for visual feedback
             inputSpot1.classList.add('correct');
             inputSpot2.classList.add('correct');
-
+            characterImage.src = "papa happy.png";
+            setTimeout(() => {     
+                characterImage.src = "papa.png";
+            }, 1000);
             // Reset strikes for the next challenge
             currentStrikes = 0;
                 
@@ -503,7 +506,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultSpot.innerHTML = "?";
                 resultSpot.classList.add('incorrect');
                 //showFeedback(false);
-
+                characterImage.src = "papa angry.png";
+                setTimeout(() => {     
+                    characterImage.src = "papa.png";
+                }, 1000);
                 // Provide feedback based on the strike count
                 if (currentStrikes === 1) {
                     // 1st Strike: More explicit hint
