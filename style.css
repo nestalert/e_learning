@@ -837,3 +837,70 @@ body.dark-mode .score-popup-content p {
 .volume-slider-container.show {
   display: block !important;
 }
+
+/* Name Entry Popup */
+.name-entry-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.name-entry-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.name-entry-content input {
+  font-size: 1.2em;
+  padding: 8px;
+  margin: 10px 0;
+  width: 80%;
+  text-transform: uppercase;
+}
+
+.name-entry-content button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#start-with-name {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#skip-name {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Leaderboard Styling */
+#leaderboard-section {
+  margin-top: 15px;
+}
+
+.leaderboard-list {
+    padding: 0;
+    list-style: none;
+    width: 100%;
+}
+
+.leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}

@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let input1Symbol = null;
     let input2Symbol = null;
 
+    // Player name & leaderboard
+    let playerName = "----";
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
 
     // --- Data (Periodic Table and Compounds) ---
     const elements = [
@@ -203,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Stop the timer if running
         clearInterval(timerInterval);
         gameActive = false;
-
+      
         // Optional: reset timer display
         timerDisplay.textContent = 'Time: 0s';
         scoreDisplay.textContent = 'Score: 0';
@@ -239,20 +242,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function endGame() {
-        gameActive = false; // Set game state
-        clearInterval(timerInterval); // Stop the timer
+     gameActive = false; // Set game state
+     clearInterval(timerInterval); // Stop the timer
 
-        // Hide game container, show score popup
-        gameContainer.classList.add('hidden');
-        scorePopup.classList.remove('hidden');
-        finalScoreDisplay.textContent = `Your final score: ${score}`;
+     // Save to leaderboard
+     leaderboard.push({ 
+        name: playerName, 
+        score: score,
+        date: new Date().toLocaleDateString() // Optional: add timestamp
+     });
+    
+     // Sort and keep top 5 scores
+     leaderboard.sort((a, b) => b.score - a.score);
+     leaderboard = leaderboard.slice(0, 5);
+     localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
 
-        // Optional: Reset input spots and feedback area when game ends
-        clearInputSpots();
-        compoundInfoText.textContent = "Game Over!";
-        resultSpot.innerHTML = "?";
-        resultSpot.style.backgroundColor = '#ddd';
-        resultSpot.classList.remove('correct', 'incorrect');
+     // Update UI
+     finalScoreDisplay.textContent = `Your final score: ${score}`;
+     gameContainer.classList.add('hidden');
+     scorePopup.classList.remove('hidden');
+    
+     // Reset game elements
+     clearInputSpots();
+     compoundInfoText.textContent = "Game Over!";
+     resultSpot.innerHTML = "?";
+     resultSpot.style.backgroundColor = '#ddd';
+     resultSpot.classList.remove('correct', 'incorrect');
+
+     // Render leaderboard
+     renderLeaderboard();
     }
 
     function startTimer() {
@@ -321,6 +339,17 @@ document.addEventListener('DOMContentLoaded', () => {
          input2Symbol = null;
     }
 
+    
+    function renderLeaderboard() {
+    const list = document.getElementById('leaderboard-list');
+    list.innerHTML = '';
+    leaderboard.forEach((entry, index) => {
+        const trophy = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+        const li = document.createElement('li');
+        li.textContent = `${trophy} ${entry.name} - ${entry.score}`;
+        list.appendChild(li);
+    });
+}
 
     function showFeedback(isCorrect) {
     const checkerBox = document.getElementById('compound-info-box');
@@ -595,7 +624,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    playButton.addEventListener('click', startGame);
+   playButton.addEventListener('click', () => {
+    document.querySelector('.name-entry-popup').classList.remove('hidden');
+    });
+    
     playAgainButton.addEventListener('click', startGame);
 
     searchInput.addEventListener('input', () => {
@@ -659,5 +691,28 @@ volumeSlider.addEventListener('input', () => {
     volumeSlider.style.background =`linear-gradient(to right,rgb(0, 0, 0) ${percent}%, #ccc ${percent}%)`;
 });
 
+// Name entry handlers
+    document.getElementById('start-with-name').addEventListener('click', () => {
+        const nameInput = document.getElementById('player-name-input').value.trim().toUpperCase().substring(0, 4);
+        playerName = nameInput || "----";
+        document.querySelector('.name-entry-popup').classList.add('hidden');
+        startGame();
+    });
+
+    document.getElementById('skip-name').addEventListener('click', () => {
+       playerName = "USER";
+       document.querySelector('.name-entry-popup').classList.add('hidden');
+       startGame();
+    });
+
+// Leaderboard toggle
+document.getElementById('toggle-leaderboard').addEventListener('click', () => {
+    const leaderboardSection = document.getElementById('leaderboard-section');
+    leaderboardSection.classList.toggle('hidden');
+    const button = document.getElementById('toggle-leaderboard');
+    button.textContent = leaderboardSection.classList.contains('hidden') 
+        ? 'View Leaderboard' 
+        : 'Hide Leaderboard';
+});
 
 });

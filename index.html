@@ -134,6 +134,20 @@
             <h3>Game Over!</h3>
             <p id="final-score">Your final score: 0</p>
             <button id="play-again-button">Play Again</button>
+            <button id="toggle-leaderboard">View Leaderboard</button>
+            <div id="leaderboard-section" class="hidden">
+                <h3>Leaderboard</h3>
+                <ol id="leaderboard-list"></ol>
+            </div>
+        </div>
+    </div>
+
+    <div class="name-entry-popup hidden">
+        <div class="name-entry-content">
+            <h3>Enter Your Name (Max 4 Letters)</h3>
+            <input type="text" id="player-name-input" maxlength="4" placeholder="NAME" />
+            <button id="start-with-name">Start Game</button>
+            <button id="skip-name">Skip</button>
         </div>
     </div>
 
