@@ -345,7 +345,11 @@ body.dark-mode .score-popup-content p {
   color: #ccc;
 }
 
+body.dark-mode .leaderboard-entry {
+  background-color: #2c2c2c;
+  border: 1px solid #ffffff;
 
+}
 
 
 
@@ -885,22 +889,46 @@ body.dark-mode .score-popup-content p {
   color: white;
 }
 
-/* Leaderboard Styling */
-#leaderboard-section {
-  margin-top: 15px;
+#sidebar-leaderboard-section {
+  padding: 10px;
 }
 
-.leaderboard-list {
-    padding: 0;
-    list-style: none;
-    width: 100%;
+.leaderboard-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 5px 10px;
 }
 
-.leaderboard-list li {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 12px;
-    margin: 4px 0;
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
+.leaderboard-entry {
+  background-color: #e6e6e6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #000000;
+}
+
+.leaderboard-entry .trophy {
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.leaderboard-entry .player-name {
+  flex-grow: 1;
+  text-align: left;
+  font-weight: bold;
+}
+
+.leaderboard-entry .score {
+  font-family: monospace;
+}
+
+
+#sidebar-leaderboard-section h4 {
+    margin-top: 0;
+    color: #ffffff;
 }

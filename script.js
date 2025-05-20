@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeSlider = document.getElementById('volume-slider');
     const volumeInline = document.getElementById('volume-inline');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const settingsSubmenu = document.getElementById("settings-submenu");
+    const settingsToggle = document.getElementById("settings-toggle");
 
     //Sounds and stuff
     const dropSound = new Audio('drop.mp3');
@@ -225,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameAudio.play();
         musicPlaying = !musicPlaying;
         score = 0;
-        timeLeft = 90; // Reset timer
+        timeLeft = 3; // Reset timer
         gameActive = true; // Set game state
         scoreDisplay.textContent = `Score: ${score}`;
         updateTimerDisplay();
@@ -345,16 +348,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     
-    function renderLeaderboard() {
-    const list = document.getElementById('leaderboard-list');
-    list.innerHTML = '';
-    leaderboard.forEach((entry, index) => {
-        const trophy = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
-        const li = document.createElement('li');
-        li.textContent = `${trophy} ${entry.name} - ${entry.score}`;
-        list.appendChild(li);
-    });
+    function renderLeaderboard(listId) {
+  const container = document.getElementById(listId);
+  container.innerHTML = '';
+
+  leaderboard.forEach((entry, index) => {
+    const trophy = index === 0 ? '🥇'
+                : index === 1 ? '🥈'
+                : index === 2 ? '🥉' : '~';
+
+    const block = document.createElement('div');
+    block.classList.add('leaderboard-entry');
+    block.innerHTML = `
+      <div class="trophy">${trophy}</div>
+      <div class="player-name">${entry.name}</div>
+      <div class="score">${entry.score}</div>
+    `;
+    container.appendChild(block);
+  });
 }
+
+
 
     function showFeedback(isCorrect) {
     const checkerBox = document.getElementById('compound-info-box');
@@ -714,12 +728,44 @@ volumeSlider.addEventListener('input', () => {
 
 // Leaderboard toggle
 document.getElementById('toggle-leaderboard').addEventListener('click', () => {
-    const leaderboardSection = document.getElementById('leaderboard-section');
-    leaderboardSection.classList.toggle('hidden');
-    const button = document.getElementById('toggle-leaderboard');
-    button.textContent = leaderboardSection.classList.contains('hidden') 
-        ? 'View Leaderboard' 
-        : 'Hide Leaderboard';
+  const section = document.getElementById('leaderboard-section');
+  section.classList.toggle('hidden');
+
+  // make sure it’s up‑to‑date whenever it opens
+  if (!section.classList.contains('hidden')) {
+    renderLeaderboard('leaderboard-list');
+  }
+
+  // change button label
+  const btn = document.getElementById('toggle-leaderboard');
+  btn.textContent = section.classList.contains('hidden')
+      ? 'View Leaderboard' : 'Hide Leaderboard';
+});
+
+document.getElementById('profile-button').addEventListener('click', (e) => {
+  e.preventDefault();               // don’t jump to “#”
+  const section = document.getElementById('sidebar-leaderboard-section');
+  section.classList.toggle('hidden');
+
+  if (!section.classList.contains('hidden')) {
+    renderLeaderboard('sidebar-leaderboard-list');
+  }
+});
+
+
+sidebar.addEventListener('mouseleave', () => {
+    if (settingsSubmenu) {
+        settingsSubmenu.style.display = 'none'; // Hide submenu
+    }
+});
+
+settingsToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (settingsSubmenu.style.display === 'block') {
+        settingsSubmenu.style.display = 'none';
+    } else {
+        settingsSubmenu.style.display = 'block';
+    }
 });
 
 });
