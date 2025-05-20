@@ -27,9 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeInline = document.getElementById('volume-inline');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
 
+    //Sounds and stuff
+    const dropSound = new Audio('drop.mp3');
+    const correctAns = new Audio('correct.mp3');
+    const wrongAns = new Audio('wrong.mp3');
+    const clap = new Audio('clap.mp3');
+
     // --- Game State Variables ---
-    let score = 0;
-    let timeLeft = 60; // Game duration in seconds (adjust as needed)
     let timerInterval = null;
     let gameActive = false; // To control game flow
     let currentChallenge = null; // Stores the compound the player needs to form
@@ -242,9 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function endGame() {
+     gameAudio.pause();
+     clap.play();
      gameActive = false; // Set game state
      clearInterval(timerInterval); // Stop the timer
-
      // Save to leaderboard
      leaderboard.push({ 
         name: playerName, 
@@ -432,7 +437,8 @@ document.addEventListener('DOMContentLoaded', () => {
         spot.addEventListener('drop', (event) => {
             if (!gameActive) return; // Only allow dropping if game is active
             event.preventDefault(); // Prevent default behavior (like opening the element as a link)
-
+            //Play drop sound
+            dropSound.play();
             // Reset dragover border color after drop
             spot.style.borderColor = '#ccc';
 
@@ -515,7 +521,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showFeedback(true);
 
 
-            // Add correct class to input spots for visual feedback
+            // Add correct class to input spots for audiovisual feedback
+            correctAns.play();
             inputSpot1.classList.add('correct');
             inputSpot2.classList.add('correct');
             characterImage.src = "papa happy.png";
@@ -534,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 resultSpot.innerHTML = "?";
                 resultSpot.classList.add('incorrect');
-                //showFeedback(false);
+                wrongAns.play();
                 characterImage.src = "papa angry.png";
                 setTimeout(() => {     
                     characterImage.src = "papa.png";
